@@ -87,11 +87,8 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
 
   // Utility function to check if the text is a YouTube link
   bool isYouTubeLink(String text) {
-    final youtubeRegex = RegExp(
-      r'^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+$',
-      caseSensitive: false,
-    );
-    return youtubeRegex.hasMatch(text);
+    var isMatched= text.startsWith("https://www.youtube.com/") || text.startsWith("https://youtube.com/") || text.startsWith("https://youtu.be/");
+    return isMatched;
   }
 
   @override

@@ -16,9 +16,10 @@ Future<String> summarizeYoutubeLink(String link) async {
   );
 
   if (response.statusCode == 200) {
-    var successMesage= "200";
-    print(successMesage);
-    return successMesage;
+    // Decode the response body as UTF-8 explicitly
+    final utf8Body = utf8.decode(response.bodyBytes);
+    final replaced= utf8Body.replaceAll(r'\n', '\n');
+    return replaced;
   } else {
     var failedMessage= "Failed to send the link. Status code: ${response.statusCode}";
     print(failedMessage);
