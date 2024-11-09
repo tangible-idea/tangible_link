@@ -3,12 +3,10 @@ import 'package:flutter/material.dart';
 class YouTubeLinkScreen extends StatelessWidget {
   final String link;
 
-  const YouTubeLinkScreen({super.key, required this.link});
+  const YouTubeLinkScreen({Key? key, required this.link}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    print(link);
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('YouTube Link'),
@@ -18,7 +16,7 @@ class YouTubeLinkScreen extends StatelessWidget {
             ? Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text('Received YouTube Link:'),
+            const Text('Detected YouTube Link:'),
             const SizedBox(height: 10),
             SelectableText(
               link,
@@ -30,7 +28,7 @@ class YouTubeLinkScreen extends StatelessWidget {
             ),
           ],
         )
-            : const Text('No link shared.'),
+            : const Text('No YouTube link detected.'),
       ),
     );
   }

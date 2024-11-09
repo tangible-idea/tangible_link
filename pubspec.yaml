@@ -64,7 +64,7 @@ dev_dependencies:
   # Md file viewer
   flutter_markdown: ^0.6.14
 
-  receive_sharing_intent: ^1.8.1
+  receive_sharing_intent: ^1.4.4
 
   # a tool for running code generators
   build_runner: ^2.4.9

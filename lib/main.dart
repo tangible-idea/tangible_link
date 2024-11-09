@@ -36,17 +36,71 @@ void main() async {
   );
 }
 
-class MyApp extends ConsumerWidget {
-  const MyApp({super.key});
+class MyApp extends ConsumerStatefulWidget {
+  const MyApp({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
+  String? _lastClipboardText; // To store the last clipboard text
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this); // Add observer for app lifecycle changes
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this); // Remove observer when the widget is disposed
+    super.dispose();
+  }
+
+  // This method is called whenever the app's lifecycle state changes
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      // App is in the foreground, check the clipboard for new YouTube links
+      _checkClipboardForYouTubeLink();
+    }
+  }
+
+  // Function to check the clipboard for YouTube links
+  Future<void> _checkClipboardForYouTubeLink() async {
+    ClipboardData? clipboardData = await Clipboard.getData('text/plain');
+    final clipboardText = clipboardData?.text ?? '';
+
+    // Check if the clipboard contains a new YouTube link
+    if (clipboardText.isNotEmpty &&
+        clipboardText != _lastClipboardText && // Ensure it's a new clipboard text
+        isYouTubeLink(clipboardText)) {
+      setState(() {
+        _lastClipboardText = clipboardText; // Update the last clipboard text
+      });
+
+      // Navigate to YouTubeLinkScreen with the YouTube link
+      ref.read(goRouterProvider).go('/youtube-link?link=$clipboardText');
+    }
+  }
+
+  // Utility function to check if the text is a YouTube link
+  bool isYouTubeLink(String text) {
+    final youtubeRegex = RegExp(
+      r'^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+$',
+      caseSensitive: false,
+    );
+    return youtubeRegex.hasMatch(text);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final goRouter = ref.watch(goRouterProvider);
 
     return MaterialApp.router(
       routerConfig: goRouter,
-      title: 'Prayers',
+      title: 'AI Sum',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: MyColor.kPrimary),
         useMaterial3: true,
@@ -54,4 +108,3 @@ class MyApp extends ConsumerWidget {
     );
   }
 }
-
