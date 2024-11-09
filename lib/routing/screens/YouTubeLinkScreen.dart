@@ -49,12 +49,13 @@ class YouTubeLinkScreen extends ConsumerWidget {
                 ),
                 gapH8,
                 // Make the summary scrollable
+                // Make the Markdown scrollable
                 Expanded(
-                  child: SingleChildScrollView(
-                    child: Text(
-                      summary,
-                      style: const TextStyle(fontSize: 16),
-                      textAlign: TextAlign.left,
+                  child: Markdown(
+                    data: summary, // Render the summary as markdown
+                    selectable: true, // Allow users to select and copy the text
+                    styleSheet: MarkdownStyleSheet.fromTheme(Theme.of(context)).copyWith(
+                      p: const TextStyle(fontSize: 16), // Customize the paragraph style
                     ),
                   ),
                 ),
