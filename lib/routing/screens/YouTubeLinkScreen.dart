@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:flutter/services.dart'; // Import this for clipboard functionality
 import 'package:tangible_link/styles/app_sizes.dart';
+import '../../data/ClipboardUtils.dart';
 import '../../riverpod/summarize_youtube_provider.dart';
+import '../app_router.dart';
 
 class YouTubeLinkScreen extends ConsumerWidget {
   final String link;
@@ -12,7 +15,8 @@ class YouTubeLinkScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // Watch the youtubeSummaryProvider for the given link
-    final summaryAsyncValue = ref.watch(youtubeSummaryProvider(link));
+    var actualLink = link;
+    final summaryAsyncValue = ref.watch(youtubeSummaryProvider(actualLink));
 
     return Scaffold(
       appBar: AppBar(
@@ -33,7 +37,7 @@ class YouTubeLinkScreen extends ConsumerWidget {
                     ),
                     gapW8,
                     SelectableText(
-                      link,
+                      actualLink,
                       style: const TextStyle(
                         fontSize: 16,
                         color: Colors.blue,
@@ -48,14 +52,12 @@ class YouTubeLinkScreen extends ConsumerWidget {
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 gapH8,
-                // Make the summary scrollable
-                // Make the Markdown scrollable
                 Expanded(
                   child: Markdown(
-                    data: summary, // Render the summary as markdown
-                    selectable: true, // Allow users to select and copy the text
+                    data: summary,
+                    selectable: true,
                     styleSheet: MarkdownStyleSheet.fromTheme(Theme.of(context)).copyWith(
-                      p: const TextStyle(fontSize: 16), // Customize the paragraph style
+                      p: const TextStyle(fontSize: 16),
                     ),
                   ),
                 ),
@@ -63,7 +65,7 @@ class YouTubeLinkScreen extends ConsumerWidget {
             ),
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator()), // Show a loading indicator
+        loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => Padding(
           padding: const EdgeInsets.all(16.0),
           child: Text(
@@ -72,6 +74,20 @@ class YouTubeLinkScreen extends ConsumerWidget {
             textAlign: TextAlign.center,
           ),
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          final clipboardLink = await ClipboardUtils.getYouTubeLinkFromClipboard();
+          if (clipboardLink != null) {
+            ref.read(goRouterProvider).go('/youtube-link?link=$clipboardLink');
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('No valid YouTube link in clipboard')),
+            );
+          }
+        },
+        child: const Icon(Icons.copy),
+        tooltip: 'Copy link',
       ),
     );
   }

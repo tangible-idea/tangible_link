@@ -63,12 +63,12 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
       // App is in the foreground, check the clipboard for new YouTube links
-      _checkClipboardForYouTubeLink();
+      checkClipboardForYouTubeLink();
     }
   }
 
   // Function to check the clipboard for YouTube links
-  Future<void> _checkClipboardForYouTubeLink() async {
+  Future<void> checkClipboardForYouTubeLink() async {
     ClipboardData? clipboardData = await Clipboard.getData('text/plain');
     final clipboardText = clipboardData?.text ?? '';
 
