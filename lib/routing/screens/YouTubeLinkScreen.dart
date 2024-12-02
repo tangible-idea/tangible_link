@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter/services.dart'; // Import this for clipboard functionality
 import 'package:tangible_link/styles/app_sizes.dart';
 import '../../data/ClipboardUtils.dart';
 import '../../riverpod/summarize_youtube_provider.dart';
+import '../../widgets/markdown_page.dart';
 import '../app_router.dart';
 
 class YouTubeLinkScreen extends ConsumerWidget {
@@ -53,13 +53,7 @@ class YouTubeLinkScreen extends ConsumerWidget {
                 ),
                 gapH8,
                 Expanded(
-                  child: Markdown(
-                    data: summary,
-                    selectable: true,
-                    styleSheet: MarkdownStyleSheet.fromTheme(Theme.of(context)).copyWith(
-                      p: const TextStyle(fontSize: 16),
-                    ),
-                  ),
+                  child: MarkdownPage(summary,)
                 ),
               ],
             ),
