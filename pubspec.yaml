@@ -64,7 +64,7 @@ dev_dependencies:
   riverpod_lint: 2.3.4
 
   # Supabase
-  supabase_flutter: ^2.1.0
+  supabase_flutter: ^2.8.1
 
 
   receive_sharing_intent: ^1.4.4

@@ -1,6 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:go_router/go_router.dart';
+
+final authProvider = StateNotifierProvider<AuthNotifier, bool>((ref) {
+  return AuthNotifier();
+});
+
+class AuthNotifier extends StateNotifier<bool> {
+  AuthNotifier() : super(false); // false indicates not loading
+
+  Future<String?> login(String email, String password) async {
+    state = true; // Set loading state
+    try {
+      await Supabase.instance.client.auth.signInWithPassword(
+        email: email,
+        password: password,
+      );
+      state = false; // Reset loading
+      return null; // No error
+    } catch (e) {
+      state = false;
+      return e.toString(); // Return error message
+    }
+  }
+}
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -13,23 +37,33 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  void _handleLogin() {
-    final email = _emailController.text;
-    final password = _passwordController.text;
+  Future<void> _handleLogin() async {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
 
-    // Simulate a simple login check
-    if (email == 'test@test.com' && password == 'test') {
-      // Navigate to the Home screen
+    if (email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Email and password cannot be empty')),
+      );
+      return;
+    }
+
+    final error = await ref.read(authProvider.notifier).login(email, password);
+
+    if (error == null) {
+      // Navigate to Home Screen on successful login
       GoRouter.of(context).go('/home');
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Invalid email or password')),
+        SnackBar(content: Text(error)),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final isLoading = ref.watch(authProvider);
+
     return Scaffold(
       backgroundColor: const Color(0xFFFFEEDC),
       body: Padding(
@@ -66,8 +100,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFE8A869),
                 ),
-                onPressed: _handleLogin,
-                child: const Text("Login", style: TextStyle(color: Colors.black87)),
+                onPressed: isLoading ? null : _handleLogin,
+                child: isLoading
+                    ? const CircularProgressIndicator(
+                  color: Colors.white,
+                )
+                    : const Text(
+                  "Login",
+                  style: TextStyle(color: Colors.black87),
+                ),
               ),
             ),
             const SizedBox(height: 20),
@@ -75,6 +116,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               child: GestureDetector(
                 onTap: () {
                   // Navigate to a registration page if required
+                  GoRouter.of(context).go('/register');
                 },
                 child: const Text(
                   "New User? Register Here",
