@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:tangible_link/routing/app_router.dart';
+import 'package:tangible_link/widgets/ProfileHeader.dart';
 
 // Data Model for a Search Result
 class SearchResult {
@@ -69,7 +71,11 @@ class HomeScreen extends ConsumerWidget {
         child: Column(
           children: [
             // User Profile
-            _buildProfileHeader(ref),
+            ProfileHeader(
+                iconData: FontAwesomeIcons.youtube,
+                onIconTap: () {
+                  ref.read(goRouterProvider).go('/youtube-link');
+                }),
 
             // Search Box
             _buildSearchBox(ref),
@@ -86,41 +92,6 @@ class HomeScreen extends ConsumerWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  // Profile Header
-  Widget _buildProfileHeader(WidgetRef ref) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          const Row(
-            children: [
-              CircleAvatar(
-                radius: 24,
-                backgroundImage:
-                NetworkImage('https://via.placeholder.com/150'),
-              ),
-              SizedBox(width: 12),
-              Text(
-                "Welcome\nEvelyn",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black87,
-                ),
-              ),
-            ],
-          ),
-          InkWell(
-            onTap: () {
-              ref.read(goRouterProvider).go('/youtube-link');
-            },
-              child: const Icon(Icons.search, size: 28, color: Colors.black87)),
-        ],
       ),
     );
   }
