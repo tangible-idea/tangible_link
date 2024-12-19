@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tangible_link/routing/app_router.dart';
 
 // Data Model for a Search Result
 class SearchResult {
@@ -68,7 +69,7 @@ class HomeScreen extends ConsumerWidget {
         child: Column(
           children: [
             // User Profile
-            _buildProfileHeader(),
+            _buildProfileHeader(ref),
 
             // Search Box
             _buildSearchBox(ref),
@@ -90,21 +91,21 @@ class HomeScreen extends ConsumerWidget {
   }
 
   // Profile Header
-  Widget _buildProfileHeader() {
+  Widget _buildProfileHeader(WidgetRef ref) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
+          const Row(
             children: [
-              const CircleAvatar(
+              CircleAvatar(
                 radius: 24,
                 backgroundImage:
                 NetworkImage('https://via.placeholder.com/150'),
               ),
-              const SizedBox(width: 12),
-              const Text(
+              SizedBox(width: 12),
+              Text(
                 "Welcome\nEvelyn",
                 style: TextStyle(
                   fontSize: 18,
@@ -114,7 +115,11 @@ class HomeScreen extends ConsumerWidget {
               ),
             ],
           ),
-          Icon(Icons.grid_view, size: 28, color: Colors.black87),
+          InkWell(
+            onTap: () {
+              ref.read(goRouterProvider).go('/youtube-link');
+            },
+              child: const Icon(Icons.search, size: 28, color: Colors.black87)),
         ],
       ),
     );
