@@ -34,8 +34,8 @@ class LoginScreen extends ConsumerStatefulWidget {
 }
 
 class _LoginScreenState extends ConsumerState<LoginScreen> {
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController(text: "test@test.com");
+  final TextEditingController _passwordController = TextEditingController(text: "test");
 
   Future<void> _handleLogin() async {
     final email = _emailController.text.trim();
@@ -127,6 +127,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 ),
               ),
             ),
+
           ],
         ),
       ),

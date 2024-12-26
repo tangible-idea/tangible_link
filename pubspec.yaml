@@ -37,6 +37,7 @@ dependencies:
   cupertino_icons: ^1.0.6
 
   markdown_widget: ^2.3.2+6
+  font_awesome_flutter: ^10.8.0
 
   # Md file viewer
   #flutter_markdown: ^0.6.14
