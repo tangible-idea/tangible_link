@@ -105,7 +105,7 @@ class HomeScreen extends ConsumerWidget {
         onChanged: (query) => ref.read(searchQueryProvider.notifier).state =
             query, // Update search state
         decoration: InputDecoration(
-          hintText: "National Park",
+          hintText: "Search summary history",
           filled: true,
           fillColor: Colors.white,
           prefixIcon: const Icon(Icons.search, color: Colors.grey),
