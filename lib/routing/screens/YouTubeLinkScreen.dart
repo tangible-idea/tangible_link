@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/services.dart';
 import 'package:tangible_link/styles/app_sizes.dart';
 import '../../data/ClipboardUtils.dart';
+import '../../riverpod/simple_state_provider.dart';
 import '../../riverpod/summarize_youtube_provider.dart';
 import '../../widgets/ProfileHeader.dart';
 import '../../widgets/markdown_page.dart';
@@ -18,14 +19,25 @@ class YouTubeLinkScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
 
-    Future.microtask(() async {
-      final clipboardLink = await ClipboardUtils.getYouTubeLinkFromClipboard();
-      debugPrint("위젯 로드 완료됨! $clipboardLink");
-      // 필요한 초기 작업 수행
+
+    ref.listen<String>(youtubeLinkProvider, (previous, next) {
+      debugPrint("🔄 youtubeLinkProvider 변경됨: $next");
     });
 
+    // 위젯이 처음 빌드된 후 한 번만 실행되도록 함
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final clipboardLink = await ClipboardUtils.getYouTubeLinkFromClipboard();
+      debugPrint("📋 클립보드에서 가져온 링크: $clipboardLink");
+
+      final currentLink = ref.read(youtubeLinkProvider);
+      if (currentLink.isEmpty) {
+        ref.read(youtubeLinkProvider.notifier).state = clipboardLink ?? "";
+      }
+    });
+
+    var actualLink = ref.watch(youtubeLinkProvider);
+
     // Watch the youtubeSummaryProvider for the given link
-    var actualLink = link;
     final summaryAsyncValue = ref.watch(youtubeSummaryProvider(actualLink));
 
     return SafeArea(
