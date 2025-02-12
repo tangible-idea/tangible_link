@@ -26,22 +26,22 @@ final searchResultsProvider = StateProvider<List<SearchResult>>((ref) {
         title: '유튜브 제목',
         subtitle: '유튜브 채널 이름',
         rating: '4.9',
-        image: 'https://via.placeholder.com/400x200'),
+        image: 'https://placehold.co/600x400/png'),
     SearchResult(
         title: 'Arches National Park',
         subtitle: 'Utah, US',
         rating: '4.7',
-        image: 'https://via.placeholder.com/400x200'),
+        image: 'https://placehold.co/600x400/png'),
     SearchResult(
         title: 'Göreme National Park',
         subtitle: 'Nevşehir merkez, Turkey',
         rating: '4.9',
-        image: 'https://via.placeholder.com/400x200'),
+        image: 'https://placehold.co/600x400/png'),
     SearchResult(
         title: 'Serengeti National Park',
         subtitle: 'Top Recommended',
         rating: '4.8',
-        image: 'https://via.placeholder.com/400x200'),
+        image: 'https://placehold.co/600x400/png'),
   ];
 });
 
