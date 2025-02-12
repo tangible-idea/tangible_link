@@ -22,15 +22,19 @@ class ProfileHeader extends ConsumerWidget implements PreferredSizeWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Row(
+          Row(
             children: [
               CircleAvatar(
                 radius: 24,
-                backgroundImage:
-                NetworkImage('https://via.placeholder.com/150'),
+                backgroundColor: Colors.grey[400],
+                child: const Icon(
+                  Icons.person, // 사람 모양 아이콘
+                  size: 32, // 아이콘 크기 조절
+                  color: Colors.white, // 아이콘 색상
+                ), // 배경색 (아이콘이 더 잘 보이도록)
               ),
-              SizedBox(width: 12),
-              Text(
+              const SizedBox(width: 12),
+              const Text(
                 "Welcome\nEvelyn",
                 style: TextStyle(
                   fontSize: 18,
