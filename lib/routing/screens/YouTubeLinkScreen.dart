@@ -17,6 +17,13 @@ class YouTubeLinkScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+
+    Future.microtask(() async {
+      final clipboardLink = await ClipboardUtils.getYouTubeLinkFromClipboard();
+      debugPrint("위젯 로드 완료됨! $clipboardLink");
+      // 필요한 초기 작업 수행
+    });
+
     // Watch the youtubeSummaryProvider for the given link
     var actualLink = link;
     final summaryAsyncValue = ref.watch(youtubeSummaryProvider(actualLink));
@@ -38,18 +45,26 @@ class YouTubeLinkScreen extends ConsumerWidget {
                   Row(
                     children: [
                       const Text(
-                        'YouTube Link:',
+                        'Link:',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       gapW8,
-                      SelectableText(
-                        actualLink,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          color: Colors.blue,
-                          decoration: TextDecoration.underline,
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: SelectableText(
+                          actualLink,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Colors.blue,
+                            decoration: TextDecoration.underline,
+                          ),
                         ),
                       ),
+                      gapW8,
+                      ElevatedButton(
+                        onPressed: ()=>{ },
+                        child: const Text("Run")
+                        )
                     ],
                   ),
                   gapH8,
@@ -86,7 +101,7 @@ class YouTubeLinkScreen extends ConsumerWidget {
               );
             }
           },
-          child: const Icon(Icons.copy),
+          child: const Icon(Icons.paste),
           tooltip: 'Copy link',
         ),
       ),
