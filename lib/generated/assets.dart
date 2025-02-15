@@ -8,5 +8,7 @@ class Assets {
   static const String imagesBtnLoginApple = 'assets/images/btn_login_apple.svg';
   static const String imagesBtnLoginGoogle = 'assets/images/btn_login_google.svg';
   static const String imagesLogo = 'assets/images/logo.png';
+  static const String lottieYoutubeAnim1 = 'assets/lottie/youtube_anim1_like.json';
+  static const String lottieYoutubeAnim2 = 'assets/lottie/youtube_anim2.json';
 
 }

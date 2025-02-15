@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/services.dart';
+import 'package:lottie/lottie.dart';
 import 'package:tangible_link/styles/app_sizes.dart';
 import '../../data/ClipboardUtils.dart';
 import '../../riverpod/simple_state_provider.dart';
@@ -19,10 +20,26 @@ class YouTubeLinkScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
 
+    final linkController = TextEditingController(text: link);
+
 
     ref.listen<String>(youtubeLinkProvider, (previous, next) {
       debugPrint("🔄 youtubeLinkProvider 변경됨: $next");
     });
+
+    /**
+     * Start analyze Youtube link.
+     */
+    Future<void> runYoutube() async {
+      final clipboardLink = await ClipboardUtils.getYouTubeLinkFromClipboard();
+      if (clipboardLink != null) {
+        ref.read(goRouterProvider).go('/youtube-link?link=$clipboardLink');
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No valid YouTube link in clipboard')),
+        );
+      }
+    }
 
     // 위젯이 처음 빌드된 후 한 번만 실행되도록 함
     WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -61,10 +78,9 @@ class YouTubeLinkScreen extends ConsumerWidget {
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       gapW8,
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: SelectableText(
-                          actualLink,
+                      Expanded(
+                        child: TextField(
+                          controller: linkController,
                           style: const TextStyle(
                             fontSize: 16,
                             color: Colors.blue,
@@ -74,7 +90,7 @@ class YouTubeLinkScreen extends ConsumerWidget {
                       ),
                       gapW8,
                       ElevatedButton(
-                        onPressed: ()=>{ },
+                        onPressed: ()=> runYoutube(),
                         child: const Text("Run")
                         )
                     ],
@@ -92,7 +108,10 @@ class YouTubeLinkScreen extends ConsumerWidget {
               ),
             );
           },
-          loading: () => const Center(child: CircularProgressIndicator()),
+          loading: () => Center(child: Padding(
+            padding: const EdgeInsets.all(100.0),
+            child: Lottie.asset('assets/lottie/youtube_anim3_jump.json'),
+          )),
           error: (error, stack) => Padding(
             padding: const EdgeInsets.all(16.0),
             child: Text(
@@ -104,17 +123,10 @@ class YouTubeLinkScreen extends ConsumerWidget {
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () async {
-            final clipboardLink = await ClipboardUtils.getYouTubeLinkFromClipboard();
-            if (clipboardLink != null) {
-              ref.read(goRouterProvider).go('/youtube-link?link=$clipboardLink');
-            } else {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('No valid YouTube link in clipboard')),
-              );
-            }
+            runYoutube();
           },
-          child: const Icon(Icons.paste),
           tooltip: 'Copy link',
+          child: const Icon(Icons.paste),
         ),
       ),
     );

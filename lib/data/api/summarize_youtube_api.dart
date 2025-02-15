@@ -28,7 +28,7 @@ Future<String> summarizeYoutubeLink(String link) async {
 
     return trimmed;
   } else {
-    var failedMessage= "Failed to send the link. Status code: ${response.statusCode}";
+    var failedMessage= "No valid YouTube link in clipboard. \nStatus code: ${response.statusCode}";
     print(failedMessage);
     return failedMessage;
   }
