@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/services.dart';
 import 'package:lottie/lottie.dart';
 import 'package:tangible_link/styles/app_sizes.dart';
-import '../../data/ClipboardUtils.dart';
+import '../../util/ClipboardUtils.dart';
 import '../../riverpod/simple_state_provider.dart';
 import '../../riverpod/summarize_youtube_provider.dart';
 import '../../widgets/ProfileHeader.dart';
