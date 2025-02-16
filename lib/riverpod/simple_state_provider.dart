@@ -6,6 +6,5 @@ final responseProvider= StateProvider((ref) => "answer here.");
 
 final loadingProvider= StateProvider((ref) => false);
 
-
 final youtubeLinkProvider= StateProvider((ref) => "");
 

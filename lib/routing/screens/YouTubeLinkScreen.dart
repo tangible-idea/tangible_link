@@ -47,8 +47,8 @@ class YouTubeLinkScreen extends ConsumerWidget {
       debugPrint("📋 클립보드에서 가져온 링크: $clipboardLink");
 
       final currentLink = ref.read(youtubeLinkProvider);
-      if (currentLink.isEmpty) {
-        ref.read(youtubeLinkProvider.notifier).state = clipboardLink ?? "";
+      if (clipboardLink != null && clipboardLink != currentLink) {
+        ref.read(youtubeLinkProvider.notifier).state = clipboardLink;
       }
     });
 
