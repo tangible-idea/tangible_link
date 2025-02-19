@@ -97,3 +97,4 @@ flutter:
     - assets/images/
     - assets/images/logo.png
     - assets/lottie/
+    - .env

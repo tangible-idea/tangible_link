@@ -5,12 +5,34 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/services.dart';
 import 'package:lottie/lottie.dart';
 import 'package:tangible_link/styles/app_sizes.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../util/ClipboardUtils.dart';
 import '../../riverpod/simple_state_provider.dart';
 import '../../riverpod/summarize_youtube_provider.dart';
+import '../../util/get_youtube_id_utils.dart';
 import '../../widgets/ProfileHeader.dart';
 import '../../widgets/markdown_page.dart';
 import '../app_router.dart';
+
+class SupabaseService {
+  final SupabaseClient supabase = Supabase.instance.client;
+
+  Future<void> saveSearchHistory(String url, String summary) async {
+    try {
+      final user = supabase.auth.currentUser;
+      final youtubeId = getYoutubeId(url);
+      final response = await supabase.from('search_history').insert({
+        'youtube_id': youtubeId,
+        'url': url,
+        'uid': user!.id,
+        'summarized': summary,
+      }).select();
+      debugPrint("✅ 검색 기록 저장 성공: $response");
+    } catch (e) {
+      debugPrint("❌ 검색 기록 저장 실패: $e");
+    }
+  }
+}
 
 class YouTubeLinkScreen extends ConsumerWidget {
   final String link;
@@ -19,9 +41,7 @@ class YouTubeLinkScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-
     final linkController = TextEditingController(text: link);
-
 
     ref.listen<String>(youtubeLinkProvider, (previous, next) {
       debugPrint("🔄 youtubeLinkProvider 변경됨: $next");
@@ -34,6 +54,11 @@ class YouTubeLinkScreen extends ConsumerWidget {
       final clipboardLink = await ClipboardUtils.getYouTubeLinkFromClipboard();
       if (clipboardLink != null) {
         ref.read(goRouterProvider).go('/youtube-link?link=$clipboardLink');
+
+        final summary = await ref
+            .read(youtubeSummaryProvider(clipboardLink).future)
+            .catchError((_) => "No summary available");
+        await SupabaseService().saveSearchHistory(clipboardLink, summary);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('No valid YouTube link in clipboard')),
@@ -49,6 +74,11 @@ class YouTubeLinkScreen extends ConsumerWidget {
       final currentLink = ref.read(youtubeLinkProvider);
       if (clipboardLink != null && clipboardLink != currentLink) {
         ref.read(youtubeLinkProvider.notifier).state = clipboardLink;
+
+        final summary = await ref
+            .read(youtubeSummaryProvider(clipboardLink).future)
+            .catchError((_) => "No summary available");
+        await SupabaseService().saveSearchHistory(clipboardLink, summary);
       }
     });
 
@@ -59,11 +89,11 @@ class YouTubeLinkScreen extends ConsumerWidget {
 
     return SafeArea(
       child: Scaffold(
-          appBar: ProfileHeader(
+        appBar: ProfileHeader(
             iconData: Icons.history,
             onIconTap: () {
               ref.read(goRouterProvider).go('/home'); // Navigate to home
-          }),
+            }),
         body: summaryAsyncValue.when(
           data: (summary) {
             return Padding(
@@ -90,9 +120,9 @@ class YouTubeLinkScreen extends ConsumerWidget {
                       ),
                       gapW8,
                       ElevatedButton(
-                        onPressed: ()=> runYoutube(),
-                        child: const Text("Run")
-                        )
+                        onPressed: () => runYoutube(),
+                        child: const Text("Run"),
+                      )
                     ],
                   ),
                   gapH8,
@@ -102,16 +132,18 @@ class YouTubeLinkScreen extends ConsumerWidget {
                   ),
                   gapH8,
                   Expanded(
-                      child: MarkdownPage(summary)
+                    child: MarkdownPage(summary),
                   ),
                 ],
               ),
             );
           },
-          loading: () => Center(child: Padding(
-            padding: const EdgeInsets.all(100.0),
-            child: Lottie.asset('assets/lottie/youtube_anim3_jump.json'),
-          )),
+          loading: () => Center(
+            child: Padding(
+              padding: const EdgeInsets.all(100.0),
+              child: Lottie.asset('assets/lottie/youtube_anim3_jump.json'),
+            ),
+          ),
           error: (error, stack) => Padding(
             padding: const EdgeInsets.all(16.0),
             child: Text(
@@ -125,8 +157,10 @@ class YouTubeLinkScreen extends ConsumerWidget {
           onPressed: () async {
             runYoutube();
           },
-          tooltip: 'Copy link',
-          child: const Icon(Icons.paste),
+          tooltip: actualLink.isEmpty ? 'Copy link' : 'Save Search result',
+          child: actualLink.isEmpty
+              ? const Icon(Icons.paste)
+              : const Icon(Icons.thumb_up),
         ),
       ),
     );
